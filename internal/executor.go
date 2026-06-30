@@ -24,7 +24,6 @@ func parseActionJson(actionString string) (Action, error) {
 	}
 
 	return act, nil
-
 }
 
 func cleanDesktopCommand(cmdStr string) string {

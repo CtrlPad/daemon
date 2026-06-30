@@ -10,3 +10,5 @@ devenv.local.yaml
 .pre-commit-config.yaml
 
 tmp
+# Added by goreleaser init:
+dist/

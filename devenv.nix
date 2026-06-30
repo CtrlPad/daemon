@@ -5,5 +5,6 @@
   languages.go.lsp.enable = true;
   packages = [
     pkgs.bluez
+    pkgs.goreleaser
   ];
 }
