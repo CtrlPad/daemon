@@ -104,11 +104,10 @@ log_crit() {
 
 uname_os() {
   os=$(uname -s | tr '[:upper:]' '[:lower:]')
-  case "$os" in
-    cygwin_nt*) os="windows" ;;
-    mingw*) os="windows" ;;
-    msys_nt*) os="windows" ;;
-  esac
+  if [ "$os" != "linux" ]; then
+    log_crit "This script only supports Linux. Detected OS: $os"
+    exit 1
+  fi
   echo "$os"
 }
 
@@ -132,7 +131,6 @@ untar() {
   case "${tarball}" in
     *.tar.gz | *.tgz) tar --no-same-owner -xzf "${tarball}" ;;
     *.tar) tar --no-same-owner -xf "${tarball}" ;;
-    *.zip) unzip -q "${tarball}" ;;
     *)
       echoerr "untar: unknown archive format for ${tarball}"
       return 1
@@ -209,10 +207,7 @@ tag_to_version() {
 
 adjust_os() {
   case ${OS} in
-    darwin) ADJUSTED_OS="macOS" ;;
     linux) ADJUSTED_OS="Linux" ;;
-    windows) ADJUSTED_OS="Windows" ;;
-    freebsd) ADJUSTED_OS="Freebsd" ;;
     *) ADJUSTED_OS=$(echo "${OS}" | sed 's/./\u&/') ;;
   esac
 }
