@@ -20,7 +20,7 @@ Download and install the binaries:
 
 ```bash
 # macOS / Linux
-curl -f https://raw.githubusercontent.com/${OWNER}/${REPO}/main/install.sh | sudo sh
+curl -f https://raw.githubusercontent.com/ctrlpad/daemon/main/install.sh | sudo sh
 
 
 # Windows / macOS
