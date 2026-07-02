@@ -27,7 +27,8 @@ curl -f https://raw.githubusercontent.com/${OWNER}/${REPO}/main/install.sh | sud
 Soon...
 ```
 
-After that run the following command, if you want to run always the daemon: 
+After that, run the following command if you want the daemon to always run:
+
 ```bash
 # Create the service file
 cat <<EOF > /etc/systemd/system/ctrlpad-daemon.service
