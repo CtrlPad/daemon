@@ -5,7 +5,7 @@
 The daemon is a background service that listens for and executes CtrlPad button actions.
 
 > [!WARNING]  
-> Important: This repository and the daemon currently support Linux only. Windows and macOS are not supported at this time.
+> This repository and the daemon currently support Linux only. Windows and macOS are not supported at this time.
 
 
 ## Table of Content
