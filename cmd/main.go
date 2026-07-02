@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/ctrlpad/daemon/internal"
 	"github.com/ctrlpad/daemon/internal/ble"
+	"github.com/ctrlpad/daemon/internal/executor"
 	"github.com/ctrlpad/daemon/internal/logger"
 )
 
@@ -20,7 +20,7 @@ func main() {
 	}
 
 	for msg := range payload {
-		err := internal.ExecuteAction(msg)
+		err := executor.ExecuteAction(msg)
 		if err != nil {
 			logger.Error("Executor", "err", err)
 		}
