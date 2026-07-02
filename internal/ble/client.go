@@ -1,21 +1,20 @@
 package ble
 
 import (
-	"fmt"
-
+	"github.com/ctrlpad/daemon/internal/logger"
 	"tinygo.org/x/bluetooth"
 )
 
 func ScanAndConnectToCtrlPad() (*bluetooth.Device, error) {
 	err := Adapter.Enable()
 	if err != nil {
-		fmt.Println("Error enabeling Adapter: ", err)
+		logger.Error("Adapter", "err", err)
 	}
 	deviceChan := make(chan bluetooth.ScanResult, 1)
 
 	println("scanning...")
 	err = Adapter.Scan(func(adapter *bluetooth.Adapter, result bluetooth.ScanResult) {
-		println("Found device:", result.Address.String(), result.RSSI, result.LocalName())
+		logger.Print("Found device", "Device Name", result.LocalName(), "RSSI", result.RSSI, "Address", result.Address.String())
 		if result.LocalName() == "ctrlPad_BLE" {
 			adapter.StopScan()
 			deviceChan <- result
@@ -29,7 +28,6 @@ func ScanAndConnectToCtrlPad() (*bluetooth.Device, error) {
 
 	device, err := Adapter.Connect(foundDevice.Address, bluetooth.ConnectionParams{})
 	if err != nil {
-		fmt.Println("Error connecting to device:", err)
 		return nil, err
 	}
 	return &device, nil
@@ -38,22 +36,16 @@ func ScanAndConnectToCtrlPad() (*bluetooth.Device, error) {
 func SetupNotifications(device *bluetooth.Device) (chan string, error) {
 	srvcs, err := device.DiscoverServices([]bluetooth.UUID{CtrlPadServiceUUID})
 	if err != nil {
-		fmt.Println(err)
-	}
-	if len(srvcs) == 0 {
-		panic("could not find heart rate service")
+		return nil, err
 	}
 	srvc := srvcs[0]
 
 	chars, err := srvc.DiscoverCharacteristics([]bluetooth.UUID{CtrlPadCharacteristicUUID})
 	if err != nil {
-		println(err)
-	}
-	if len(chars) == 0 {
-		panic("could not find heart rate characteristic")
+		return nil, err
 	}
 	char := chars[0]
-	println("found characteristic", char.UUID().String())
+	logger.Info("Found characteristic", "UUID", char.UUID().String())
 
 	notifyChan := make(chan string, 1)
 

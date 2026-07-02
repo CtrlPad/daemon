@@ -1,27 +1,29 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/ctrlpad/daemon/internal"
 	"github.com/ctrlpad/daemon/internal/ble"
+	"github.com/ctrlpad/daemon/internal/logger"
 )
 
 func main() {
 	device, err := ble.ScanAndConnectToCtrlPad()
 	if err != nil {
-		fmt.Println(err)
+		logger.Error("Connection", "err", err)
 		return
 	}
 
 	payload, err := ble.SetupNotifications(device)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error("SetupNotifications", "err", err)
 		return
 	}
 
 	for msg := range payload {
-		internal.ExecuteAction(msg)
+		err := internal.ExecuteAction(msg)
+		if err != nil {
+			logger.Error("Executor", "err", err)
+		}
 	}
 
 	select {}

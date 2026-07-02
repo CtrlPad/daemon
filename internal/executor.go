@@ -2,11 +2,12 @@ package internal
 
 import (
 	"encoding/json"
-	"fmt"
 	"os/exec"
 	"regexp"
 	"runtime"
 	"strings"
+
+	"github.com/ctrlpad/daemon/internal/logger"
 )
 
 type Action struct {
@@ -38,19 +39,18 @@ func ExecuteAction(actionString string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(action.Exec)
 
 	switch runtime.GOOS {
 	case "linux":
 		cmd := exec.Command(cleanDesktopCommand(action.Exec))
-		fmt.Println("Executing: ", cleanDesktopCommand(action.Exec))
+		logger.Info("Executor", "Executing", cleanDesktopCommand(action.Exec))
 		err := cmd.Start()
 		if err != nil {
 			return err
 		}
 
 	default:
-		fmt.Println("Operating system not supported :(")
+		logger.Error("Executor", "err", "OS not supported")
 	}
 
 	return nil
