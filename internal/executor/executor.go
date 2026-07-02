@@ -43,7 +43,7 @@ func ExecuteAction(actionString string) error {
 	switch runtime.GOOS {
 	case "linux":
 		cmd := exec.Command(cleanDesktopCommand(action.Exec))
-		log.Info("Executor", "Executing", cleanDesktopCommand(action.Exec))
+		log.Infof("Executing %s", cleanDesktopCommand(action.Exec))
 		err := cmd.Start()
 		if err != nil {
 			return err

@@ -11,9 +11,10 @@ func ScanAndConnectToCtrlPad() (*bluetooth.Device, error) {
 	if err != nil {
 		log.Error("Adapter", "err", err)
 	}
+	log.Info("Enabled Adapter")
 	deviceChan := make(chan bluetooth.ScanResult, 1)
 
-	log.Info("Scanning...")
+	log.Info("Scanning for BLE device")
 	err = Adapter.Scan(func(adapter *bluetooth.Adapter, result bluetooth.ScanResult) {
 		log.Info("Found device", "Device Name", result.LocalName(), "RSSI", result.RSSI, "Address", result.Address.String())
 		if result.LocalName() == "ctrlPad_BLE" {
@@ -31,6 +32,7 @@ func ScanAndConnectToCtrlPad() (*bluetooth.Device, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Infof("Connected to %s", foundDevice.LocalName())
 	return &device, nil
 }
 
@@ -40,6 +42,7 @@ func SetupNotifications(device *bluetooth.Device) (chan string, error) {
 		return nil, err
 	}
 	srvc := srvcs[0]
+	log.Info("Found service", "UUID", srvc.UUID().String())
 
 	chars, err := srvc.DiscoverCharacteristics([]bluetooth.UUID{CtrlPadCharacteristicUUID})
 	if err != nil {
@@ -56,6 +59,7 @@ func SetupNotifications(device *bluetooth.Device) (chan string, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Info("BLE Notifications enabled")
 
 	return notifyChan, nil
 }
