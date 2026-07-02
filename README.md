@@ -4,11 +4,54 @@
 
 The daemon is a background service that listens for and executes CtrlPad button actions.
 
+> [!WARNING]  
+> Important: This repository and the daemon currently support Linux only. Windows and macOS are not supported at this time.
+
 
 ## Table of Content
 
+- [Quick Start](#quick-start)
 - [Development Setup](#development-setup)
 - [Contributing](#contributing)
+
+## Quick Start
+
+Download and install the binaries:
+
+```bash
+# macOS / Linux
+curl -f https://raw.githubusercontent.com/${OWNER}/${REPO}/main/install.sh | sudo sh
+
+
+# Windows / macOS
+Soon...
+```
+
+After that run the following command, if you want to run always the daemon: 
+```bash
+# Create the service file
+cat <<EOF > /etc/systemd/system/ctrlpad-daemon.service
+[Unit]
+Description=CtrlPad Daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ctrlpad-daemon
+Restart=on-failure
+User=root
+
+EOF
+
+# Reload, start, and enable the service
+systemctl daemon-reload
+systemctl start ctrlpad-daemon.service
+systemctl enable ctrlpad-daemon.service
+```
+
+Verify the installation:
+```bash
+systemctl status ctrlpad-daemon.service
+```
 
 ## Development Setup
 

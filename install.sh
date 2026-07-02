@@ -3,7 +3,7 @@ set -e
 
 OWNER="ctrlPad"
 REPO="daemon"
-BINARY="daemon"
+BINARY="ctrlpad-daemon"
 PROJECT_NAME="daemon"
 
 usage() {
@@ -29,7 +29,7 @@ EOF
 }
 
 parse_args() {
-  BINDIR=${BINDIR:-"$HOME/.local/bin"}
+  BINDIR=${BINDIR:-"/usr/local/bin"}
   while getopts "b:dh?x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
