@@ -1,20 +1,21 @@
 package ble
 
 import (
-	"github.com/ctrlpad/daemon/internal/logger"
+	"github.com/charmbracelet/log"
+
 	"tinygo.org/x/bluetooth"
 )
 
 func ScanAndConnectToCtrlPad() (*bluetooth.Device, error) {
 	err := Adapter.Enable()
 	if err != nil {
-		logger.Error("Adapter", "err", err)
+		log.Error("Adapter", "err", err)
 	}
 	deviceChan := make(chan bluetooth.ScanResult, 1)
 
-	println("scanning...")
+	log.Info("Scanning...")
 	err = Adapter.Scan(func(adapter *bluetooth.Adapter, result bluetooth.ScanResult) {
-		logger.Print("Found device", "Device Name", result.LocalName(), "RSSI", result.RSSI, "Address", result.Address.String())
+		log.Info("Found device", "Device Name", result.LocalName(), "RSSI", result.RSSI, "Address", result.Address.String())
 		if result.LocalName() == "ctrlPad_BLE" {
 			adapter.StopScan()
 			deviceChan <- result
@@ -45,7 +46,7 @@ func SetupNotifications(device *bluetooth.Device) (chan string, error) {
 		return nil, err
 	}
 	char := chars[0]
-	logger.Info("Found characteristic", "UUID", char.UUID().String())
+	log.Info("Found characteristic", "UUID", char.UUID().String())
 
 	notifyChan := make(chan string, 1)
 

@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/ctrlpad/daemon/internal/logger"
+	"github.com/charmbracelet/log"
 )
 
 type Action struct {
@@ -43,14 +43,14 @@ func ExecuteAction(actionString string) error {
 	switch runtime.GOOS {
 	case "linux":
 		cmd := exec.Command(cleanDesktopCommand(action.Exec))
-		logger.Info("Executor", "Executing", cleanDesktopCommand(action.Exec))
+		log.Info("Executor", "Executing", cleanDesktopCommand(action.Exec))
 		err := cmd.Start()
 		if err != nil {
 			return err
 		}
 
 	default:
-		logger.Error("Executor", "err", "OS not supported")
+		log.Error("Executor", "err", "OS not supported")
 	}
 
 	return nil
