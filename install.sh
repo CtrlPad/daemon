@@ -4,7 +4,7 @@ set -e
 OWNER="ctrlPad"
 REPO="daemon"
 BINARY="ctrlpad-daemon"
-PROJECT_NAME="daemon"
+PROJECT_NAME="ctrlpad-daemon"
 
 usage() {
   this=$1
