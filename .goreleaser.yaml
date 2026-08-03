@@ -33,12 +33,12 @@ snapcrafts:
   - name: ctrlpad-daemon
     summary: "Ctrlpad button-action daemon"
     description: "The daemon is a background service that listens for and executes Ctrlpad button actions."
-    publish: true
+    publish: false
     license: "MIT"
     confinement: classic
     base: core24 
-    channel_templates:
-      - stable
+    #channel_templates:
+    #  - stable
     apps:
       ctrlpad-daemon:
         daemon: simple
