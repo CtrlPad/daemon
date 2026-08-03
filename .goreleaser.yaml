@@ -1,12 +1,14 @@
 version: 2
 
+project_name: ctrlpad-daemon
+
 before:
   hooks:
     - go mod tidy
     - go generate ./...
 
 builds:
-  - main: ./...
+  - main: .
     binary: ctrlpad-daemon
     env:
       - CGO_ENABLED=0
