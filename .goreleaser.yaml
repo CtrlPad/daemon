@@ -26,6 +26,18 @@ archives:
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
 
+snapcrafts:
+  - name: ctrlpad-daemon
+    summary: "Ctrlpad button-action daemon"
+    description: "The daemon is a background service that listens for and executes Ctrlpad button actions."
+    publish: true
+    license: "MIT"
+    confinement: classic
+    base: core26 
+    apps:
+      ctrlpad-daemon:
+        daemon: simple
+
 changelog:
   sort: asc
   use: github
