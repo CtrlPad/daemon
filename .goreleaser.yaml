@@ -7,6 +7,7 @@ before:
 
 builds:
   - main: ./...
+    binary: ctrlpad-daemon
     env:
       - CGO_ENABLED=0
     goos:
