@@ -34,7 +34,7 @@ snapcrafts:
     publish: true
     license: "MIT"
     confinement: classic
-    base: core26 
+    base: core24 
     apps:
       ctrlpad-daemon:
         daemon: simple
