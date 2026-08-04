@@ -35,12 +35,15 @@ snapcrafts:
     description: "The daemon is a background service that listens for and executes Ctrlpad button actions."
     publish: true
     license: "MIT"
-    confinement: classic
+    confinement: strict 
     base: core24 
     channel_templates:
       - stable
     apps:
       ctrlpad-daemon:
+        plugs:
+          - bluez
+          - desktop
         daemon: simple
 
 changelog:
