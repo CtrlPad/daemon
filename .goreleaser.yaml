@@ -32,7 +32,7 @@ archives:
 snapcrafts:
   - name: ctrlpad-daemon
     summary: "Ctrlpad button-action daemon"
-    description: "The daemon is a background service that listens for and executes Ctrlpad button actions."
+    description: "Background service that listens for and executes CtrlPad button actions"
     publish: true
     license: "MIT"
     confinement: strict 
