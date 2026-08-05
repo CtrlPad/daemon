@@ -21,7 +21,7 @@ buildGoModule {
     ];
   };
 
-  vendorHash = lib.fakeHash;
+  vendorHash = "sha256-X2ggrQMdMKeFx2plgSMJjHaqTIspVu/PuTOjvuAgdO8=";
 
   env.CGO_ENABLED = 0;
 
