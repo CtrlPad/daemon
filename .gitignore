@@ -12,3 +12,5 @@ devenv.local.yaml
 tmp
 # Added by goreleaser init:
 dist/
+
+result
