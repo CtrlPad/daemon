@@ -25,6 +25,10 @@ buildGoModule {
 
   env.CGO_ENABLED = 0;
 
+  postInstall = ''
+    mv $out/bin/daemon $out/bin/ctrlpad-daemon
+  '';
+
   ldflags = [
     "-s"
     "-w"
