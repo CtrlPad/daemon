@@ -2,56 +2,53 @@ package executor
 
 import (
 	"encoding/json"
-	"os/exec"
-	"regexp"
+	"fmt"
 	"runtime"
 	"strings"
-
-	"github.com/charmbracelet/log"
 )
 
-type Action struct {
-	ID   int16  `json:"id"`
-	Name string `json:"name"`
-	Exec string `json:"exec"`
-	Icon string `json:"icon"`
+type Button struct {
+	ID     int16  `json:"id"`
+	Name   string `json:"name"`
+	Action string `json:"action"`
+	Icon   string `json:"icon"`
 }
 
-func parseActionJson(actionString string) (Action, error) {
-	var act Action
-	err := json.Unmarshal([]byte(actionString), &act)
+func parseButtonConfig(buttonConfig string) (Button, error) {
+	var btn Button
+	err := json.Unmarshal([]byte(buttonConfig), &btn)
 	if err != nil {
-		return Action{}, err
+		return Button{}, err
 	}
-
-	return act, nil
+	return btn, nil
 }
 
-func cleanDesktopCommand(cmdStr string) string {
-	reg := regexp.MustCompile("%[uUfFkicm]")
-	res := reg.ReplaceAllString(cmdStr, "")
-	res = strings.TrimSpace(res)
-	return res
+// Example: application:firefox
+func parseActionPrefix(action string) (actionType string, target string, err error) {
+	parts := strings.Split(action, ":")
+	actionType = parts[0]
+	target = parts[1]
+
+	if actionType == "" || target == "" {
+		return "", "", fmt.Errorf("Error parsing action")
+	}
+	return actionType, target, nil
 }
 
-func ExecuteAction(actionString string) error {
-	action, err := parseActionJson(actionString)
+func ExecuteAction(buttonConfig string) error {
+	btnConfig, err := parseButtonConfig(buttonConfig)
+	if err != nil {
+		return err
+	}
+	actionType, target, err := parseActionPrefix(btnConfig.Action)
 	if err != nil {
 		return err
 	}
 
 	switch runtime.GOOS {
 	case "linux":
-		cmd := exec.Command(cleanDesktopCommand(action.Exec))
-		log.Infof("Executing %s", cleanDesktopCommand(action.Exec))
-		err := cmd.Start()
-		if err != nil {
-			return err
-		}
-
+		return executeLinux(actionType, target)
 	default:
-		log.Error("Executor", "err", "OS not supported")
+		return fmt.Errorf("unsupported OS: %s", runtime.GOOS)
 	}
-
-	return nil
 }

@@ -13,14 +13,14 @@ func Run() int {
 		return 1
 	}
 
-	payload, err := ble.SetupNotifications(device)
+	buttonConfigs, err := ble.SetupNotifications(device)
 	if err != nil {
 		log.Error("SetupNotifications", "err", err)
 		return 1
 	}
 
-	for msg := range payload {
-		err := executor.ExecuteAction(msg)
+	for buttonConfig := range buttonConfigs {
+		err := executor.ExecuteAction(buttonConfig)
 		if err != nil {
 			log.Error("Executor", "err", err)
 		}
