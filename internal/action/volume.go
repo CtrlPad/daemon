@@ -1,4 +1,4 @@
-package executor
+package action
 
 import (
 	"fmt"
@@ -32,7 +32,7 @@ func parseVolumeTarget(target string) (string, error) { // +10 => 10%+
 	return value + suffix, nil
 }
 
-func execVolume(target string) error {
+func ExecVolume(target string) error {
 	log.Infof("execVolume %s", target)
 	err := utils.CheckLinuxBinary("wpctl")
 	if err != nil {
