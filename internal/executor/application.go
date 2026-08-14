@@ -1,10 +1,18 @@
 package executor
 
-import "os/exec"
+import (
+	"os/exec"
+
+	"github.com/ctrlpad/daemon/internal/utils"
+)
 
 func execApplication(target string) error {
+	err := utils.CheckLinuxBinary(target)
+	if err != nil {
+		return err
+	}
 	cmd := exec.Command(target)
-	err := cmd.Start()
+	err = cmd.Start()
 	if err != nil {
 		return err
 	}
