@@ -8,6 +8,8 @@ func executeLinux(actionType string, target string) error {
 	switch actionType {
 	case "application":
 		return execApplication(target)
+	case "volume":
+		return execVolume(target)
 	default:
 		return fmt.Errorf("unknown action type: %s", actionType)
 	}
