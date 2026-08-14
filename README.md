@@ -1,79 +1,104 @@
-# ctrlPad daemon 
+# Ctrlpad daemon
 
-![GitHub stars](https://img.shields.io/github/stars/ctrlPad/firmware?style=for-the-badge&logo=github) ![GitHub issues](https://img.shields.io/github/issues/ctrlPad/firmware?style=for-the-badge&logo=github) ![Last commit](https://img.shields.io/github/last-commit/ctrlPad/firmware?style=for-the-badge&logo=github)
+![GitHub stars](https://img.shields.io/github/stars/ctrlPad/daemon?style=for-the-badge&logo=github) ![GitHub issues](https://img.shields.io/github/issues/ctrlPad/daemon?style=for-the-badge&logo=github) ![Last commit](https://img.shields.io/github/last-commit/ctrlPad/daemon?style=for-the-badge&logo=github)
 
-The daemon is a background service that listens for and executes CtrlPad button actions.
+The daemon is the background service behind CtrlPad. It scans for the `ctrlPad_BLE` device, connects to it over Bluetooth Low Energy, subscribes to the button characteristic and executes the action that comes with every button press.
 
-> [!WARNING]  
-> This repository and the daemon currently support Linux only. Windows and macOS are not supported at this time.
+> [!WARNING]
+> This project is still in development. Content, structure and setup can change at any time. The daemon currently supports Linux only - Windows and macOS are not supported at this time.
 
+## Installation
 
-## Table of Content
+Installation and service setup are documented in the guide:
 
-- [Quick Start](#quick-start)
-- [Development Setup](#development-setup)
-- [Contributing](#contributing)
+**https://ctrlpad.xyz/docs/guide/ctrlpad-daemon**
 
-## Quick Start
+It covers the install script, the Snap package, the Nix flake and the NixOS module, plus how to run the daemon as a service.
 
-Download and install the binaries:
+## Requirements
 
-```bash
-# macOS / Linux
-curl -f https://raw.githubusercontent.com/ctrlpad/daemon/main/install.sh | sudo sh
+[devenv](https://devenv.sh) is required. It provides Go, BlueZ and GoReleaser in the versions this project is developed against. Install it together with Nix, then everything else comes from `devenv.nix`.
 
+A working Bluetooth stack (BlueZ, running `bluetoothd`) is needed to talk to the device.
 
-# Windows / macOS
-Soon...
-```
+## Getting Started
 
-After that, run the following command if you want the daemon to always run:
+```sh
+git clone https://github.com/CtrlPad/daemon.git
+cd daemon
 
-```bash
-# Create the service file
-cat <<EOF > /etc/systemd/system/ctrlpad-daemon.service
-[Unit]
-Description=CtrlPad Daemon
-After=network.target
-
-[Service]
-ExecStart=/usr/local/bin/ctrlpad-daemon
-Restart=on-failure
-User=root
-
-EOF
-
-# Reload, start, and enable the service
-systemctl daemon-reload
-systemctl start ctrlpad-daemon.service
-systemctl enable ctrlpad-daemon.service
-```
-
-Verify the installation:
-```bash
-systemctl status ctrlpad-daemon.service
-```
-
-## Development Setup
-
-To contribute to this project, please ensure you have [devenv](https://deven.sh) installed on your system.
-
-```
-# Clone the repository
-git clone https://github.com/CtrlPad/desktop.git
-cd desktop
-
-# Enter the development environment
 devenv shell
+go run .
+```
+
+The daemon starts scanning immediately and logs every device it sees until it finds `ctrlPad_BLE`.
+
+For a watch-and-restart loop there is an [air](https://github.com/air-verse/air) config (`.air.toml`, builds to `./tmp/main`):
+
+```sh
+go install github.com/air-verse/air@latest
+air
+```
+
+## Project Structure
+
+```
+main.go              entrypoint — logger setup, version info, calls cmd.Run
+cmd/
+  root.go            wires it together: connect → subscribe → execute in a loop
+internal/
+  ble/               BLE client
+    client.go        scan, connect, enable notifications
+    config.go        adapter, service and characteristic UUIDs
+  executor/          turns a button payload into an action
+    executor.go      button JSON + "type:target" action parsing
+    linux.go         Linux action dispatch
+  action/            the actions themselves
+    application.go   launch a binary
+    volume.go        set/raise/lower the volume via wpctl
+  info/              version, commit and build date reporting
+  utils/             small helpers (binary lookup in PATH)
+nix/
+  package.nix        buildGoModule package
+  module.nix         NixOS module (systemd user service)
+install.sh           install script for the released binaries
+.goreleaser.yaml     release build: tar.gz archives + Snap
+.github/workflows/   release workflow, runs GoReleaser on a published release
+```
+
+### How an action flows through it
+
+The device sends a JSON button config over the notify characteristic:
+
+```json
+{ "id": 1, "name": "Firefox", "action": "application:firefox", "icon": "firefox" }
+```
+
+`executor` splits `action` into a type and a target, and dispatches on the type. Adding a new action means adding a function in `internal/action/` and a `case` in `internal/executor/linux.go`.
+
+## Packaging
+
+Releases are built by GoReleaser and published from `.github/workflows/release.yml` when a GitHub release is published. To check a build locally:
+
+```sh
+goreleaser release --snapshot --clean
+```
+
+The Nix flake exposes the `ctrlpad-daemon` package, an overlay and a NixOS module:
+
+```sh
+nix build .#ctrlpad-daemon
 ```
 
 ## Contributing
 
 1. **Fork** the repository
-2. **Clone** your fork: `git clone https://github.com/ctrlPad/daemon.git`
+2. **Clone** your fork: `git clone https://github.com/<you>/daemon.git`
 3. **Branch**: `git checkout -b feature/your-feature`
 4. **Commit**: `git commit -m 'feat: add some feature'`
 5. **Push**: `git push origin feature/your-feature`
 6. **Open** a PR
+
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org) — the changelog is generated from them (`feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`/`ci`; `chore` is filtered out).
 
 Please follow the existing code style. Thanks!
