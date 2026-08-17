@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/charmbracelet/log"
 	"github.com/ctrlpad/daemon/internal/utils"
 )
 
@@ -33,7 +32,6 @@ func parseVolumeTarget(target string) (string, error) { // +10 => 10%+
 }
 
 func ExecVolume(target string) error {
-	log.Infof("execVolume %s", target)
 	err := utils.CheckLinuxBinary("wpctl")
 	if err != nil {
 		return err
