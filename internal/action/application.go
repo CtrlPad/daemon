@@ -6,7 +6,7 @@ import (
 	"github.com/ctrlpad/daemon/internal/utils"
 )
 
-func execApplication(target string) error {
+func ExecApplication(target string) error {
 	err := utils.CheckLinuxBinary(target)
 	if err != nil {
 		return err
