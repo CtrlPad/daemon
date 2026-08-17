@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
+
+	"github.com/charmbracelet/log"
 )
 
 type Button struct {
@@ -36,6 +38,7 @@ func parseActionPrefix(action string) (actionType string, target string, err err
 }
 
 func ExecuteAction(buttonConfig string) error {
+	log.Info("Received button config", "config", buttonConfig)
 	btnConfig, err := parseButtonConfig(buttonConfig)
 	if err != nil {
 		return err
@@ -44,10 +47,16 @@ func ExecuteAction(buttonConfig string) error {
 	if err != nil {
 		return err
 	}
+	log.Debug("Parsed action", "type", actionType, "target", target)
 
 	switch runtime.GOOS {
 	case "linux":
-		return executeLinux(actionType, target)
+		err := executeLinux(actionType, target)
+		if err != nil {
+			return err
+		}
+		log.Info("Action executed", "type", actionType, "target", target)
+		return nil
 	default:
 		return fmt.Errorf("unsupported OS: %s", runtime.GOOS)
 	}
